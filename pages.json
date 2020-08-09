@@ -1,0 +1,12 @@
+{
+  "pages": [
+    {
+      "url": "https://www.google.com",
+      "label": "Google"
+    },
+    {
+      "url": "https://about.google/our-story/",
+      "label": "About Google"
+    }
+  ]
+}

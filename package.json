@@ -1,0 +1,14 @@
+{
+  "name": "screencapz",
+  "version": "0.0.1",
+  "description": "Headless screencapz of mobile (iPhone 8) and desktop (@1024px) from a list.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrew J Wright",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^5.2.1"
+  }
+}
