@@ -59,6 +59,11 @@ const buildPath = (extra, label) =>
     console.log(`[Desktop: ${p+1} of ${len}]\nCapturing: ${pages[p].url}`);
     console.log('\tNavigating...');
     await page.goto(pages[p].url, { waitUntil: 'networkidle2' });
+    // Prevent capturing Skeletor
+    await page.waitForSelector('div.mb-8.animate-pulse', {
+      hidden: true,
+      timeout: 5000,
+    });
     console.log('\tSaving screenshot...');
     await page.screenshot({
       path: buildPath('desktop', pages[p].label),
@@ -95,6 +100,11 @@ const buildPath = (extra, label) =>
     console.log(`[Mobile: ${p+1} of ${len}]\nCapturing: ${pages[p].url}`);
     console.log('\tNavigating...');
     await page.goto(pages[p].url, { waitUntil: 'networkidle2' });
+    // Prevent capturing Skeletor
+    await page.waitForSelector('div.mb-8.animate-pulse', {
+      hidden: true,
+      timeout: 5000,
+    });
     console.log('\tSaving screenshot...');
     await page.screenshot({
       path: buildPath('mobile', pages[p].label),
@@ -110,7 +120,7 @@ const buildPath = (extra, label) =>
     if (accordionItem) {
       console.log('\tSaving accordion screenshot...');
       await page.click(querySelector);
-      //await page.keyboard.press('Tab');
+      // await page.keyboard.press('Tab');
       await page.mouse.click(0,0); // Takes focus off the accordion toggle
       await page.screenshot({
         path: buildPath('mobile--open', pages[p].label),
