@@ -23,13 +23,16 @@ const viewportSettings = {
     width: 1024,
     height: 768,
     isMobile: false,
+    deviceScaleFactor: 2, /* Force retina-scale and get hi-res images */
   },
 };
 
 const iPhone8 = puppeteer.devices['iPhone 8'];
 
-const buildPath = (prefix, label) =>
-  `./captures/${prefix}-${label.replace(/[\W]/gi, '-')}.jpg`;
+const querySelector = 'button[data-reach-accordion-button]';
+
+const buildPath = (extra, label) =>
+  `./captures/${label.replace(/[\W]/gi, '-')}-${extra}.png`;
 
 (async () => {
   const data = await fs.readFile(require.resolve(jsonFilePath));
@@ -53,7 +56,7 @@ const buildPath = (prefix, label) =>
   await page.setViewport(viewportSettings.desktop);
 
   for (let p = 0, len = pages.length; p < len; p++) {
-    console.log(`[Desktop] Capturing: ${pages[p].url}`);
+    console.log(`[Desktop: ${p+1} of ${len}]\nCapturing: ${pages[p].url}`);
     console.log('\tNavigating...');
     await page.goto(pages[p].url, { waitUntil: 'networkidle2' });
     console.log('\tSaving screenshot...');
@@ -61,6 +64,22 @@ const buildPath = (prefix, label) =>
       path: buildPath('desktop', pages[p].label),
       fullPage: true,
     });
+
+    /**
+     * If there's an accordion, open the first panel and take a screenshot
+     */
+    let accordionItem = await page.$(querySelector);
+
+    if (accordionItem) {
+      console.log('\tSaving accordion screenshot...');
+      await page.click(querySelector);
+      //await page.keyboard.press('Tab');
+      await page.mouse.click(0,0); // Takes focus off the accordion toggle
+      await page.screenshot({
+        path: buildPath('desktop--open', pages[p].label),
+        fullPage: true,
+      });
+    }
   }
 
   /**
@@ -73,7 +92,7 @@ const buildPath = (prefix, label) =>
   await page.emulate(iPhone8);
 
   for (let p = 0, len = pages.length; p < len; p++) {
-    console.log(`[Mobile] Capturing: ${pages[p].url}`);
+    console.log(`[Mobile: ${p+1} of ${len}]\nCapturing: ${pages[p].url}`);
     console.log('\tNavigating...');
     await page.goto(pages[p].url, { waitUntil: 'networkidle2' });
     console.log('\tSaving screenshot...');
@@ -81,8 +100,25 @@ const buildPath = (prefix, label) =>
       path: buildPath('mobile', pages[p].label),
       fullPage: true,
     });
+
+    /**
+     * If there's an accordion, open the first panel and take a screenshot
+     */
+    
+    let accordionItem = await page.$(querySelector);
+
+    if (accordionItem) {
+      console.log('\tSaving accordion screenshot...');
+      await page.click(querySelector);
+      //await page.keyboard.press('Tab');
+      await page.mouse.click(0,0); // Takes focus off the accordion toggle
+      await page.screenshot({
+        path: buildPath('mobile--open', pages[p].label),
+        fullPage: true,
+      });
+    }
   }
 
   await browser.close();
-  console.log('Done.');
+  console.log(`Done. ${pages.length} pages captured.`);
 })();
